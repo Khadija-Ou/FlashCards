@@ -1,7 +1,7 @@
 import { useFocusEffect, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
+import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
 import {
-  SafeAreaView,
   ScrollView,
   StyleSheet,
   Text,
@@ -43,6 +43,7 @@ function getLastStudiedLabel(lastStudied: string | null): string {
 
 export default function HomeScreen() {
   const router = useRouter();
+  const insets = useSafeAreaInsets();
   const [decks, setDecks] = useState<Deck[]>([]);
 
   useFocusEffect(
@@ -72,7 +73,7 @@ export default function HomeScreen() {
 
       {/* FAB */}
       <TouchableOpacity
-        style={styles.fab}
+        style={[styles.fab, { bottom: insets.bottom + 16 }]}
         onPress={() => router.push('/create-deck')}
         activeOpacity={0.85}
       >
@@ -321,7 +322,6 @@ const styles = StyleSheet.create({
   // FAB
   fab: {
     position: 'absolute',
-    bottom: 32,
     right: 24,
     width: 56,
     height: 56,
