@@ -1,16 +1,18 @@
 import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
 import { useCallback, useState } from 'react';
 import {
+  Alert,
   Modal,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
+  TextInput,
   TouchableOpacity,
   View,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Card, Deck, getDeckById } from '../../utils/storage';
+import { Card, Deck, getDeckById, updateDeck } from '../../utils/storage';
 
 const TEAL = '#1D9E75';
 const TEAL_BG = '#E8F5F0';
@@ -24,6 +26,48 @@ export default function DeckDetailScreen() {
   const [deck, setDeck] = useState<Deck | null>(null);
   const [selectedCard, setSelectedCard] = useState<Card | null>(null);
 
+  // Card action sheet
+  const [cardAction, setCardAction] = useState<Card | null>(null);
+
+  // Delete card
+  const [cardToDelete, setCardToDelete] = useState<Card | null>(null);
+
+  // Edit card
+  const [cardToEdit, setCardToEdit] = useState<Card | null>(null);
+  const [editQuestion, setEditQuestion] = useState('');
+  const [editAnswer, setEditAnswer] = useState('');
+
+  async function confirmDeleteCard() {
+    if (!deck || !cardToDelete) return;
+    const updated = { ...deck, cards: deck.cards.filter((c) => c.id !== cardToDelete.id) };
+    await updateDeck(updated);
+    setDeck(updated);
+    setCardToDelete(null);
+  }
+
+  function openEditCard(card: Card) {
+    setCardToEdit(card);
+    setEditQuestion(card.question);
+    setEditAnswer(card.answer);
+    setCardAction(null);
+  }
+
+  async function saveEditCard() {
+    if (!deck || !cardToEdit) return;
+    const q = editQuestion.trim();
+    const a = editAnswer.trim();
+    if (!q || !a) return;
+    const updated = {
+      ...deck,
+      cards: deck.cards.map((c) =>
+        c.id === cardToEdit.id ? { ...c, question: q, answer: a } : c
+      ),
+    };
+    await updateDeck(updated);
+    setDeck(updated);
+    setCardToEdit(null);
+  }
+
   useFocusEffect(
     useCallback(() => {
       if (deckId) getDeckById(deckId).then(setDeck);
@@ -31,6 +75,15 @@ export default function DeckDetailScreen() {
   );
 
   if (!deck) return null;
+
+  function handleStudy() {
+    if (!deck) return;
+    if (deck.cards.length === 0) {
+      Alert.alert('No cards yet', 'Add at least one card before studying!');
+      return;
+    }
+    router.push(`/study/${deck.id}`);
+  }
 
   return (
     <View style={styles.safe}>
@@ -60,6 +113,7 @@ export default function DeckDetailScreen() {
             key={card.id}
             style={styles.cardRow}
             onPress={() => setSelectedCard(card)}
+            onLongPress={() => setCardAction(card)}
             activeOpacity={0.7}
           >
             <Text style={styles.cardQuestion}>{card.question}</Text>
@@ -84,12 +138,142 @@ export default function DeckDetailScreen() {
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.studyBtn}
-          onPress={() => router.push(`/study/${deck.id}`)}
+          onPress={handleStudy}
           activeOpacity={0.85}
         >
           <Text style={styles.studyBtnText}>Study</Text>
         </TouchableOpacity>
       </View>
+
+      {/* Card action sheet (Edit / Delete) */}
+      <Modal
+        visible={!!cardAction}
+        transparent
+        statusBarTranslucent
+        animationType="fade"
+        onRequestClose={() => setCardAction(null)}
+      >
+        <Pressable style={styles.overlay} onPress={() => setCardAction(null)}>
+          <Pressable style={styles.popup} onPress={() => {}}>
+            <Text style={styles.actionSheetTitle} numberOfLines={2}>
+              {cardAction?.question}
+            </Text>
+            <TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => {
+                if (cardAction) openEditCard(cardAction);
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={styles.actionBtnText}>Edit card</Text>
+            </TouchableOpacity>
+            <View style={styles.actionDivider} />
+            <TouchableOpacity
+              style={styles.actionBtn}
+              onPress={() => {
+                setCardToDelete(cardAction);
+                setCardAction(null);
+              }}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.actionBtnText, { color: '#E85050' }]}>Delete card</Text>
+            </TouchableOpacity>
+            <TouchableOpacity
+              style={[styles.actionBtn, { marginTop: 8 }]}
+              onPress={() => setCardAction(null)}
+              activeOpacity={0.7}
+            >
+              <Text style={[styles.actionBtnText, { color: GRAY }]}>Cancel</Text>
+            </TouchableOpacity>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* Edit card popup */}
+      <Modal
+        visible={!!cardToEdit}
+        transparent
+        statusBarTranslucent
+        animationType="fade"
+        onRequestClose={() => setCardToEdit(null)}
+      >
+        <Pressable style={styles.overlay} onPress={() => setCardToEdit(null)}>
+          <Pressable style={styles.popup} onPress={() => {}}>
+            <Text style={styles.editPopupTitle}>EDIT CARD</Text>
+
+            <Text style={styles.editFieldLabel}>QUESTION</Text>
+            <TextInput
+              style={styles.editInput}
+              value={editQuestion}
+              onChangeText={setEditQuestion}
+              multiline
+              autoFocus
+            />
+
+            <Text style={[styles.editFieldLabel, { marginTop: 14 }]}>ANSWER</Text>
+            <TextInput
+              style={styles.editInput}
+              value={editAnswer}
+              onChangeText={setEditAnswer}
+              multiline
+            />
+
+            <View style={styles.popupButtons}>
+              <TouchableOpacity
+                style={styles.cancelBtn}
+                onPress={() => setCardToEdit(null)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.cancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={[
+                  styles.saveEditBtn,
+                  (!editQuestion.trim() || !editAnswer.trim()) && { opacity: 0.45 },
+                ]}
+                onPress={saveEditCard}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.saveEditBtnText}>Save</Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
+
+      {/* Delete card confirmation */}
+      <Modal
+        visible={!!cardToDelete}
+        transparent
+        statusBarTranslucent
+        animationType="fade"
+        onRequestClose={() => setCardToDelete(null)}
+      >
+        <Pressable style={styles.overlay} onPress={() => setCardToDelete(null)}>
+          <Pressable style={styles.popup} onPress={() => {}}>
+            <Text style={styles.deletePopupTitle}>Delete this card?</Text>
+            <Text style={styles.deletePopupSubtitle}>
+              This will permanently remove the card from this deck.
+            </Text>
+            <View style={styles.popupButtons}>
+              <TouchableOpacity
+                style={styles.cancelBtn}
+                onPress={() => setCardToDelete(null)}
+                activeOpacity={0.7}
+              >
+                <Text style={styles.cancelBtnText}>Cancel</Text>
+              </TouchableOpacity>
+              <TouchableOpacity
+                style={styles.deleteConfirmBtn}
+                onPress={confirmDeleteCard}
+                activeOpacity={0.85}
+              >
+                <Text style={styles.deleteConfirmBtnText}>Delete</Text>
+              </TouchableOpacity>
+            </View>
+          </Pressable>
+        </Pressable>
+      </Modal>
 
       {/* Card detail popup */}
       <Modal
@@ -250,6 +434,54 @@ const styles = StyleSheet.create({
     padding: 24,
     borderCurve: 'continuous',
   } as any,
+
+  // Action sheet
+  actionSheetTitle: {
+    fontSize: 13,
+    fontWeight: '600',
+    color: GRAY,
+    marginBottom: 16,
+    lineHeight: 18,
+  },
+  actionBtn: {
+    paddingVertical: 13,
+    alignItems: 'center',
+  },
+  actionBtnText: {
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#1A1A1A',
+  },
+  actionDivider: {
+    height: 1,
+    backgroundColor: BORDER,
+  },
+
+  // Edit card
+  editPopupTitle: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: GRAY,
+    letterSpacing: 1.2,
+    marginBottom: 16,
+  },
+  editFieldLabel: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: TEAL,
+    letterSpacing: 1.2,
+    marginBottom: 6,
+  },
+  editInput: {
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 10,
+    padding: 12,
+    fontSize: 15,
+    color: '#1A1A1A',
+    minHeight: 48,
+  },
+
   popupTitle: {
     fontSize: 11,
     fontWeight: '700',
@@ -297,5 +529,61 @@ const styles = StyleSheet.create({
     fontSize: 15,
     color: TEAL,
     fontWeight: '600',
+  },
+
+  // Delete card confirmation
+  deletePopupTitle: {
+    fontSize: 17,
+    fontWeight: '700',
+    color: '#1A1A1A',
+    marginBottom: 8,
+  },
+  deletePopupSubtitle: {
+    fontSize: 14,
+    color: GRAY,
+    lineHeight: 20,
+    marginBottom: 24,
+  },
+  popupButtons: {
+    flexDirection: 'row',
+    gap: 12,
+    marginTop: 20,
+  },
+  cancelBtn: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor: BORDER,
+    borderRadius: 10,
+    paddingVertical: 13,
+    alignItems: 'center',
+  },
+  cancelBtnText: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#1A1A1A',
+  },
+  saveEditBtn: {
+    flex: 1,
+    backgroundColor: TEAL,
+    borderRadius: 10,
+    paddingVertical: 13,
+    alignItems: 'center',
+  },
+  saveEditBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#fff',
+  },
+  deleteConfirmBtn: {
+    flex: 1,
+    backgroundColor: '#E85050',
+    borderRadius: 10,
+    paddingVertical: 13,
+    alignItems: 'center',
+  },
+  deleteConfirmBtnText: {
+    fontSize: 15,
+    fontWeight: '700',
+    color: '#fff',
   },
 });

@@ -1,7 +1,8 @@
 import { useLocalSearchParams, useRouter } from 'expo-router';
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import {
+  Animated,
   ScrollView,
   StyleSheet,
   Text,
@@ -17,6 +18,26 @@ const RED = '#E85050';
 const GRAY = '#888888';
 const BORDER = '#E0E0E0';
 
+function Toast({ visible }: { visible: boolean }) {
+  const opacity = useRef(new Animated.Value(0)).current;
+
+  useEffect(() => {
+    if (visible) {
+      Animated.sequence([
+        Animated.timing(opacity, { toValue: 1, duration: 200, useNativeDriver: true }),
+        Animated.delay(1400),
+        Animated.timing(opacity, { toValue: 0, duration: 300, useNativeDriver: true }),
+      ]).start();
+    }
+  }, [visible]);
+
+  return (
+    <Animated.View style={[styles.toast, { opacity }]} pointerEvents="none">
+      <Text style={styles.toastText}>Voice input coming soon!</Text>
+    </Animated.View>
+  );
+}
+
 export default function AddCardsScreen() {
   const router = useRouter();
   const { deckName, deckId } = useLocalSearchParams<{ deckName: string; deckId?: string }>();
@@ -24,12 +45,15 @@ export default function AddCardsScreen() {
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
   const [cards, setCards] = useState<Card[]>([]);
-  const [recordingField, setRecordingField] = useState<'question' | 'answer' | null>(null);
+  const [showToast, setShowToast] = useState(false);
+  const toastTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function startRecording(field: 'question' | 'answer') {
-    if (recordingField) return;
-    setRecordingField(field);
-    setTimeout(() => setRecordingField(null), 2000);
+  function showMicToast() {
+    if (toastTimer.current) clearTimeout(toastTimer.current);
+    setShowToast(false);
+    // Defer to next tick so Animated re-triggers if already shown
+    setTimeout(() => setShowToast(true), 10);
+    toastTimer.current = setTimeout(() => setShowToast(false), 2000);
   }
 
   function addCard() {
@@ -100,16 +124,11 @@ export default function AddCardsScreen() {
             multiline
           />
           <TouchableOpacity
-            style={[
-              styles.micBtn,
-              recordingField === 'question' && styles.micBtnActive,
-            ]}
-            onPress={() => startRecording('question')}
+            style={styles.micBtn}
+            onPress={showMicToast}
             activeOpacity={0.7}
           >
-            <Text style={[styles.micIcon, recordingField === 'question' && { color: '#fff' }]}>
-              🎤
-            </Text>
+            <Text style={styles.micIcon}>🎤</Text>
           </TouchableOpacity>
         </View>
 
@@ -125,22 +144,13 @@ export default function AddCardsScreen() {
             multiline
           />
           <TouchableOpacity
-            style={[
-              styles.micBtn,
-              recordingField === 'answer' && styles.micBtnActive,
-            ]}
-            onPress={() => startRecording('answer')}
+            style={styles.micBtn}
+            onPress={showMicToast}
             activeOpacity={0.7}
           >
-            <Text style={[styles.micIcon, recordingField === 'answer' && { color: '#fff' }]}>
-              🎤
-            </Text>
+            <Text style={styles.micIcon}>🎤</Text>
           </TouchableOpacity>
         </View>
-
-        {recordingField && (
-          <Text style={styles.recordingHint}>● Recording... speak your answer</Text>
-        )}
 
         {/* Cards preview */}
         {cards.length > 0 && (
@@ -178,6 +188,8 @@ export default function AddCardsScreen() {
           </Text>
         </TouchableOpacity>
       </ScrollView>
+
+      <Toast visible={showToast} />
     </SafeAreaView>
   );
 }
@@ -242,18 +254,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     marginTop: 2,
   },
-  micBtnActive: {
-    backgroundColor: TEAL,
-    borderColor: TEAL,
-  },
   micIcon: {
     fontSize: 18,
-  },
-  recordingHint: {
-    fontSize: 12,
-    color: TEAL,
-    marginTop: 8,
-    fontWeight: '500',
   },
   cardsAdded: {
     fontSize: 13,
@@ -313,5 +315,21 @@ const styles = StyleSheet.create({
     color: '#fff',
     fontSize: 16,
     fontWeight: '700',
+  },
+
+  // Toast
+  toast: {
+    position: 'absolute',
+    bottom: 40,
+    alignSelf: 'center',
+    backgroundColor: 'rgba(0,0,0,0.75)',
+    paddingHorizontal: 20,
+    paddingVertical: 10,
+    borderRadius: 20,
+  },
+  toastText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
