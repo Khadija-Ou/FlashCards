@@ -19,7 +19,7 @@ const BORDER = '#E0E0E0';
 
 export default function AddCardsScreen() {
   const router = useRouter();
-  const { deckName } = useLocalSearchParams<{ deckName: string }>();
+  const { deckName, deckId } = useLocalSearchParams<{ deckName: string; deckId?: string }>();
 
   const [question, setQuestion] = useState('');
   const [answer, setAnswer] = useState('');
@@ -49,15 +49,25 @@ export default function AddCardsScreen() {
   async function saveDeck() {
     if (cards.length === 0) return;
     const existing = await loadDecks();
-    const newDeck = {
-      id: Date.now().toString(),
-      name: deckName ?? 'Untitled',
-      cards,
-      progress: 0,
-      lastStudied: null,
-    };
-    await saveDecks([...existing, newDeck]);
-    router.replace('/');
+    if (deckId) {
+      // Adding cards to an existing deck
+      const updated = existing.map((d) =>
+        d.id === deckId ? { ...d, cards: [...d.cards, ...cards] } : d
+      );
+      await saveDecks(updated);
+      router.back();
+    } else {
+      // Creating a brand new deck
+      const newDeck = {
+        id: Date.now().toString(),
+        name: deckName ?? 'Untitled',
+        cards,
+        progress: 0,
+        lastStudied: null,
+      };
+      await saveDecks([...existing, newDeck]);
+      router.replace('/');
+    }
   }
 
   return (

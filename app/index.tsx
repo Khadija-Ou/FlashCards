@@ -67,7 +67,7 @@ export default function HomeScreen() {
         {decks.length === 0 ? (
           <EmptyState />
         ) : (
-          <DeckList decks={decks} onPress={(id) => router.push(`/study/${id}`)} />
+          <DeckList decks={decks} onPress={(id) => router.push(`/deck/${id}`)} />
         )}
       </ScrollView>
 
