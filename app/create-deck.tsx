@@ -1,20 +1,20 @@
-import { useRouter } from 'expo-router';
-import { useState } from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from "expo-router";
+import { useState } from "react";
 import {
   StyleSheet,
   Text,
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
+} from "react-native";
+import { SafeAreaView } from "react-native-safe-area-context";
 
-const TEAL = '#1D9E75';
-const GRAY = '#888888';
+const TEAL = "#1D9E75";
+const GRAY = "#888888";
 
 export default function CreateDeckScreen() {
   const router = useRouter();
-  const [name, setName] = useState('');
+  const [name, setName] = useState("");
 
   function handleCreate() {
     if (!name.trim()) return;
@@ -62,7 +62,7 @@ export default function CreateDeckScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   container: {
     flex: 1,
@@ -70,25 +70,25 @@ const styles = StyleSheet.create({
     paddingTop: 16,
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     marginBottom: 32,
   },
   backArrow: {
-    fontSize: 22,
+    fontSize: 26,
     color: TEAL,
-    fontWeight: '600',
+    fontWeight: "700",
   },
   headerTitle: {
     flex: 1,
-    textAlign: 'center',
+    textAlign: "center",
     fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1A1A',
+    fontWeight: "700",
+    color: "#1A1A1A",
   },
   fieldLabel: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: "600",
     color: GRAY,
     letterSpacing: 1.2,
     marginBottom: 8,
@@ -99,21 +99,21 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 14,
     fontSize: 16,
-    color: '#1A1A1A',
+    color: "#1A1A1A",
     marginBottom: 24,
   },
   button: {
     backgroundColor: TEAL,
     borderRadius: 10,
     paddingVertical: 16,
-    alignItems: 'center',
+    alignItems: "center",
   },
   buttonDisabled: {
     opacity: 0.45,
   },
   buttonText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 });

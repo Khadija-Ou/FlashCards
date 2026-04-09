@@ -1,50 +1,45 @@
-# Welcome to your Expo app 👋
+# Flashcards: Study Wisely
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A simple and beautiful flashcard app to help you study smarter.
 
-## Get started
+## Screenshots
 
-1. Install dependencies
+(add screenshots here)
 
-   ```bash
-   npm install
-   ```
+## Features
 
-2. Start the app
+- Create decks and organize your cards
+- Add cards by typing question and answer
+- Study with random card order
+- Track your progress with Forgotten / Hazy / Got it
+- Edit and delete decks and cards
+- Results screen after every study session
+- Works completely offline — no account needed
 
-   ```bash
-   npx expo start
-   ```
+## Tech Stack
 
-In the output, you'll find options to open the app in a
+- React Native
+- Expo
+- expo-router
+- AsyncStorage
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## Getting Started
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Clone the repo and install dependencies:
 
 ```bash
-npm run reset-project
+git clone https://github.com/Khadija-Ou/FlashCards.git
+cd FlashCards
+npm install
+npx expo start
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+Scan the QR code with Expo Go on your phone.
 
-## Learn more
+## Download
 
-To learn more about developing your project with Expo, look at the following resources:
+Coming soon on Google Play Store.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+## License
 
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+MIT

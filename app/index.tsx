@@ -253,17 +253,17 @@ function EmptyState() {
         <View style={styles.cardFront} />
       </View>
 
-      <Text style={styles.emptyTitle}>No decks yet</Text>
+      <Text style={styles.emptyTitle}>Ready to study?</Text>
       <Text style={styles.emptyDesc}>
-        Tap the + button to create your first deck and start studying.
+        Tap the + button below to get started.
       </Text>
 
       {/* 3-step boxes */}
       <View style={styles.stepsRow}>
         {[
-          { num: '01', label: 'Create a\ndeck' },
+          { num: '01', label: 'Tap + and name\nyour deck' },
           { num: '02', label: 'Add your\ncards' },
-          { num: '03', label: 'Study!' },
+          { num: '03', label: 'Start\nstudying!' },
         ].map((step) => (
           <View key={step.num} style={styles.stepBox}>
             <Text style={styles.stepNum}>{step.num}</Text>

@@ -181,9 +181,9 @@ const styles = StyleSheet.create({
     paddingBottom: 12,
   },
   backArrow: {
-    fontSize: 22,
+    fontSize: 26,
     color: TEAL,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   headerTitle: {
     flex: 1,

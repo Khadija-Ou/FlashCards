@@ -1,5 +1,5 @@
-import { useFocusEffect, useLocalSearchParams, useRouter } from 'expo-router';
-import { useCallback, useState } from 'react';
+import { useFocusEffect, useLocalSearchParams, useRouter } from "expo-router";
+import { useCallback, useState } from "react";
 import {
   Alert,
   Modal,
@@ -10,14 +10,14 @@ import {
   TextInput,
   TouchableOpacity,
   View,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Card, Deck, getDeckById, updateDeck } from '../../utils/storage';
+} from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { Card, Deck, getDeckById, updateDeck } from "../../utils/storage";
 
-const TEAL = '#1D9E75';
-const TEAL_BG = '#E8F5F0';
-const GRAY = '#888888';
-const BORDER = '#E0E0E0';
+const TEAL = "#1D9E75";
+const TEAL_BG = "#E8F5F0";
+const GRAY = "#888888";
+const BORDER = "#E0E0E0";
 
 export default function DeckDetailScreen() {
   const router = useRouter();
@@ -34,12 +34,15 @@ export default function DeckDetailScreen() {
 
   // Edit card
   const [cardToEdit, setCardToEdit] = useState<Card | null>(null);
-  const [editQuestion, setEditQuestion] = useState('');
-  const [editAnswer, setEditAnswer] = useState('');
+  const [editQuestion, setEditQuestion] = useState("");
+  const [editAnswer, setEditAnswer] = useState("");
 
   async function confirmDeleteCard() {
     if (!deck || !cardToDelete) return;
-    const updated = { ...deck, cards: deck.cards.filter((c) => c.id !== cardToDelete.id) };
+    const updated = {
+      ...deck,
+      cards: deck.cards.filter((c) => c.id !== cardToDelete.id),
+    };
     await updateDeck(updated);
     setDeck(updated);
     setCardToDelete(null);
@@ -60,7 +63,7 @@ export default function DeckDetailScreen() {
     const updated = {
       ...deck,
       cards: deck.cards.map((c) =>
-        c.id === cardToEdit.id ? { ...c, question: q, answer: a } : c
+        c.id === cardToEdit.id ? { ...c, question: q, answer: a } : c,
       ),
     };
     await updateDeck(updated);
@@ -71,7 +74,7 @@ export default function DeckDetailScreen() {
   useFocusEffect(
     useCallback(() => {
       if (deckId) getDeckById(deckId).then(setDeck);
-    }, [deckId])
+    }, [deckId]),
   );
 
   if (!deck) return null;
@@ -79,7 +82,7 @@ export default function DeckDetailScreen() {
   function handleStudy() {
     if (!deck) return;
     if (deck.cards.length === 0) {
-      Alert.alert('No cards yet', 'Add at least one card before studying!');
+      Alert.alert("No cards yet", "Add at least one card before studying!");
       return;
     }
     router.push(`/study/${deck.id}`);
@@ -128,7 +131,7 @@ export default function DeckDetailScreen() {
           style={styles.addBtn}
           onPress={() =>
             router.push({
-              pathname: '/add-cards',
+              pathname: "/add-cards",
               params: { deckName: deck.name, deckId: deck.id },
             })
           }
@@ -176,14 +179,18 @@ export default function DeckDetailScreen() {
               }}
               activeOpacity={0.7}
             >
-              <Text style={[styles.actionBtnText, { color: '#E85050' }]}>Delete card</Text>
+              <Text style={[styles.actionBtnText, { color: "#E85050" }]}>
+                Delete card
+              </Text>
             </TouchableOpacity>
             <TouchableOpacity
               style={[styles.actionBtn, { marginTop: 8 }]}
               onPress={() => setCardAction(null)}
               activeOpacity={0.7}
             >
-              <Text style={[styles.actionBtnText, { color: GRAY }]}>Cancel</Text>
+              <Text style={[styles.actionBtnText, { color: GRAY }]}>
+                Cancel
+              </Text>
             </TouchableOpacity>
           </Pressable>
         </Pressable>
@@ -210,7 +217,9 @@ export default function DeckDetailScreen() {
               autoFocus
             />
 
-            <Text style={[styles.editFieldLabel, { marginTop: 14 }]}>ANSWER</Text>
+            <Text style={[styles.editFieldLabel, { marginTop: 14 }]}>
+              ANSWER
+            </Text>
             <TextInput
               style={styles.editInput}
               value={editAnswer}
@@ -229,7 +238,9 @@ export default function DeckDetailScreen() {
               <TouchableOpacity
                 style={[
                   styles.saveEditBtn,
-                  (!editQuestion.trim() || !editAnswer.trim()) && { opacity: 0.45 },
+                  (!editQuestion.trim() || !editAnswer.trim()) && {
+                    opacity: 0.45,
+                  },
                 ]}
                 onPress={saveEditCard}
                 activeOpacity={0.85}
@@ -314,42 +325,42 @@ export default function DeckDetailScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   header: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     paddingHorizontal: 24,
     paddingBottom: 12,
   },
   backArrow: {
-    fontSize: 22,
+    fontSize: 26,
     color: TEAL,
-    fontWeight: '600',
+    fontWeight: "700",
     marginRight: 12,
   },
   headerTitle: {
     flex: 1,
     fontSize: 22,
-    fontWeight: '700',
-    color: '#1A1A1A',
+    fontWeight: "700",
+    color: "#1A1A1A",
     letterSpacing: -0.3,
   },
   cardCountBox: {
-    alignItems: 'center',
+    alignItems: "center",
     marginLeft: 12,
     minWidth: 36,
   },
   cardCountNum: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1A1A',
+    fontWeight: "700",
+    color: "#1A1A1A",
     lineHeight: 20,
   },
   cardCountLabel: {
     fontSize: 11,
     color: GRAY,
-    fontWeight: '500',
+    fontWeight: "500",
   },
   scroll: {
     paddingHorizontal: 24,
@@ -357,15 +368,15 @@ const styles = StyleSheet.create({
   },
   sectionLabel: {
     fontSize: 11,
-    fontWeight: '600',
+    fontWeight: "600",
     color: GRAY,
     letterSpacing: 1.2,
     marginBottom: 12,
     marginTop: 4,
   },
   cardRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     borderWidth: 1,
     borderColor: BORDER,
     borderRadius: 10,
@@ -376,8 +387,8 @@ const styles = StyleSheet.create({
   cardQuestion: {
     flex: 1,
     fontSize: 15,
-    color: '#1A1A1A',
-    fontWeight: '500',
+    color: "#1A1A1A",
+    fontWeight: "500",
   },
   chevron: {
     fontSize: 20,
@@ -385,13 +396,13 @@ const styles = StyleSheet.create({
     marginLeft: 8,
   },
   bottomBar: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     paddingHorizontal: 24,
     paddingTop: 16,
     borderTopWidth: 1,
     borderTopColor: BORDER,
-    backgroundColor: '#fff',
+    backgroundColor: "#fff",
   },
   addBtn: {
     flex: 1,
@@ -399,58 +410,58 @@ const styles = StyleSheet.create({
     borderColor: TEAL,
     borderRadius: 12,
     paddingVertical: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   addBtnText: {
     color: TEAL,
     fontSize: 15,
-    fontWeight: '600',
+    fontWeight: "600",
   },
   studyBtn: {
     flex: 1,
     backgroundColor: TEAL,
     borderRadius: 12,
     paddingVertical: 15,
-    alignItems: 'center',
+    alignItems: "center",
   },
   studyBtnText: {
-    color: '#fff',
+    color: "#fff",
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: "700",
   },
 
   // Modal
   overlay: {
     flex: 1,
-    backgroundColor: 'rgba(0,0,0,0.5)',
-    justifyContent: 'center',
-    alignItems: 'center',
+    backgroundColor: "rgba(0,0,0,0.5)",
+    justifyContent: "center",
+    alignItems: "center",
     padding: 24,
   },
   popup: {
-    width: '100%',
-    backgroundColor: '#fff',
+    width: "100%",
+    backgroundColor: "#fff",
     borderRadius: 16,
     padding: 24,
-    borderCurve: 'continuous',
+    borderCurve: "continuous",
   } as any,
 
   // Action sheet
   actionSheetTitle: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: "600",
     color: GRAY,
     marginBottom: 16,
     lineHeight: 18,
   },
   actionBtn: {
     paddingVertical: 13,
-    alignItems: 'center',
+    alignItems: "center",
   },
   actionBtnText: {
     fontSize: 16,
-    fontWeight: '600',
-    color: '#1A1A1A',
+    fontWeight: "600",
+    color: "#1A1A1A",
   },
   actionDivider: {
     height: 1,
@@ -460,14 +471,14 @@ const styles = StyleSheet.create({
   // Edit card
   editPopupTitle: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
     color: GRAY,
     letterSpacing: 1.2,
     marginBottom: 16,
   },
   editFieldLabel: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
     color: TEAL,
     letterSpacing: 1.2,
     marginBottom: 6,
@@ -478,28 +489,28 @@ const styles = StyleSheet.create({
     borderRadius: 10,
     padding: 12,
     fontSize: 15,
-    color: '#1A1A1A',
+    color: "#1A1A1A",
     minHeight: 48,
   },
 
   popupTitle: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
     color: GRAY,
     letterSpacing: 1.2,
     marginBottom: 16,
   },
   popupSectionLabel: {
     fontSize: 11,
-    fontWeight: '700',
+    fontWeight: "700",
     color: TEAL,
     letterSpacing: 1.2,
     marginBottom: 6,
   },
   popupQuestion: {
     fontSize: 18,
-    fontWeight: '700',
-    color: '#1A1A1A',
+    fontWeight: "700",
+    color: "#1A1A1A",
     marginBottom: 16,
   },
   divider: {
@@ -515,7 +526,7 @@ const styles = StyleSheet.create({
   },
   popupAnswer: {
     fontSize: 15,
-    color: '#1A1A1A',
+    color: "#1A1A1A",
     lineHeight: 22,
   },
   closeBtn: {
@@ -523,19 +534,19 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     borderRadius: 10,
     paddingVertical: 14,
-    alignItems: 'center',
+    alignItems: "center",
   },
   closeBtnText: {
     fontSize: 15,
     color: TEAL,
-    fontWeight: '600',
+    fontWeight: "600",
   },
 
   // Delete card confirmation
   deletePopupTitle: {
     fontSize: 17,
-    fontWeight: '700',
-    color: '#1A1A1A',
+    fontWeight: "700",
+    color: "#1A1A1A",
     marginBottom: 8,
   },
   deletePopupSubtitle: {
@@ -545,7 +556,7 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   popupButtons: {
-    flexDirection: 'row',
+    flexDirection: "row",
     gap: 12,
     marginTop: 20,
   },
@@ -555,35 +566,35 @@ const styles = StyleSheet.create({
     borderColor: BORDER,
     borderRadius: 10,
     paddingVertical: 13,
-    alignItems: 'center',
+    alignItems: "center",
   },
   cancelBtnText: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#1A1A1A',
+    fontWeight: "600",
+    color: "#1A1A1A",
   },
   saveEditBtn: {
     flex: 1,
     backgroundColor: TEAL,
     borderRadius: 10,
     paddingVertical: 13,
-    alignItems: 'center',
+    alignItems: "center",
   },
   saveEditBtnText: {
     fontSize: 15,
-    fontWeight: '700',
-    color: '#fff',
+    fontWeight: "700",
+    color: "#fff",
   },
   deleteConfirmBtn: {
     flex: 1,
-    backgroundColor: '#E85050',
+    backgroundColor: "#E85050",
     borderRadius: 10,
     paddingVertical: 13,
-    alignItems: 'center',
+    alignItems: "center",
   },
   deleteConfirmBtnText: {
     fontSize: 15,
-    fontWeight: '700',
-    color: '#fff',
+    fontWeight: "700",
+    color: "#fff",
   },
 });
