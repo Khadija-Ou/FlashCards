@@ -4,7 +4,7 @@ A simple and beautiful flashcard app to help you study smarter.
 
 ## Screenshots
 
-![FlashCards](https://github.com/user-attachments/assets/537a4a27-f52c-4067-a294-d33286d86c46)
+<img width="720" height="1600" alt="FlashCards" src="https://github.com/user-attachments/assets/4ae1d85a-c9c7-4191-ad6c-a7a5da91a1fa" />
 
 ## Features
 
